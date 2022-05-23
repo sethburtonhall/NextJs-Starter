@@ -1,16 +1,20 @@
-import React from "react";
-import moment from "moment";
-import parse from "html-react-parser";
-import Stack from "../../sdk-plugin/index";
-import Layout from "../../components/layout";
+import React from 'react';
+import moment from 'moment';
+import parse from 'html-react-parser';
+import Stack from '../../sdk-plugin/index';
+import Layout from '../../components/layout';
 
-import RenderComponents from "../../components/render-components";
-import ArchiveRelative from "../../components/archive-relative";
+import { Track } from '@uniformdev/context-react';
+
+import RenderComponents from '../../components/render-components';
+import ArchiveRelative from '../../components/archive-relative';
 
 export default function BlogPost(props) {
   const { header, banner, footer, result } = props;
+  const behavior = result?.topic?.name;
   return (
     <Layout header={header} footer={footer} page={banner} blogpost={result}>
+      {behavior && <Track behavior={behavior} />}
       {banner.page_components && (
         <RenderComponents
           pageComponents={banner.page_components}
@@ -22,12 +26,12 @@ export default function BlogPost(props) {
       )}
       <div className="blog-container">
         <div className="blog-detail">
-          <h2>{result.title ? result.title : ""}</h2>
+          <h2>{result.title ? result.title : ''}</h2>
           <p>
-            {moment(result.date).format("ddd, MMM D YYYY")},{" "}
+            {moment(result.date).format('ddd, MMM D YYYY')},{' '}
             <strong>{result.author[0].title}</strong>
           </p>
-          {typeof result.body === "string" && parse(result.body)}
+          {typeof result.body === 'string' && parse(result.body)}
         </div>
         <div className="blog-column-right">
           <div className="related-post">
@@ -46,23 +50,23 @@ export default function BlogPost(props) {
 export async function getServerSideProps({ params }) {
   try {
     const banner = await Stack.getEntryByUrl({
-      contentTypeUid: "page",
-      entryUrl: "/blog",
+      contentTypeUid: 'page',
+      entryUrl: '/blog',
     });
     const blog = await Stack.getEntryByUrl({
-      contentTypeUid: "blog_post",
+      contentTypeUid: 'blog_post',
       entryUrl: `/blog/${params.post}`,
-      referenceFieldPath: ["author", "related_post"],
-      jsonRtePath: ["body", "related_post.body"],
+      referenceFieldPath: ['author', 'related_post'],
+      jsonRtePath: ['body', 'related_post.body'],
     });
     const header = await Stack.getEntry({
-      contentTypeUid: "header",
-      referenceFieldPath: ["navigation_menu.page_reference"],
-      jsonRtePath: ["notification_bar.announcement_text"],
+      contentTypeUid: 'header',
+      referenceFieldPath: ['navigation_menu.page_reference'],
+      jsonRtePath: ['notification_bar.announcement_text'],
     });
     const footer = await Stack.getEntry({
-      contentTypeUid: "footer",
-      jsonRtePath: ["copyright"],
+      contentTypeUid: 'footer',
+      jsonRtePath: ['copyright'],
     });
     return {
       props: {
