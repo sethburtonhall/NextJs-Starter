@@ -9,6 +9,7 @@ import '../styles/style.css';
 import '../styles/personalization.css';
 
 import { UniformContext } from '@uniformdev/context-react';
+import { NextCookieTransitionDataStore } from '@uniformdev/context-next';
 import { Context, enableContextDevTools } from '@uniformdev/context';
 import manifest from '../contextManifest.json';
 
@@ -20,11 +21,12 @@ const context = new Context({
   manifest,
   defaultConsent: true,
   plugins: [enableContextDevTools()],
+  transitionStore: new NextCookieTransitionDataStore({}),
 });
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps, serverUniformContext }) {
   return (
-    <UniformContext context={context}>
+    <UniformContext context={serverUniformContext ?? context} outputType="edge">
       <Component {...pageProps} />
     </UniformContext>
   );
